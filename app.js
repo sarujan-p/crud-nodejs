@@ -1,13 +1,21 @@
-import express from 'express';
-import db from './config/db-connection.js'
-import dotenv from 'dotenv'
+const express = require('express')
+const mongoose = require('mongoose')
+const employeeRouter = require('./routes/employee')
+require('dotenv').config()
 
-dotenv.config()
 const app = express()
 
 app.use(express.json())
+app.use('/', employeeRouter)
 
-app.listen(process.env.PORT, () => { 
-    console.log("server started")
-    db()
-})
+const DB_CONNECTION_URL = process.env.DB_CONNECTION_URL
+const PORT = process.env.PORT || 5000
+
+mongoose.connect(DB_CONNECTION_URL)
+    	.then(() => app.listen(PORT, () => {
+            console.log(`Server started on port ${PORT}`)
+            console.log(`Database connected`)
+        })).catch((err) => {
+            console.log("Something went wrong!");
+        })
+
